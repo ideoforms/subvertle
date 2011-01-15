@@ -1,8 +1,8 @@
 class subfetch:
-    def __init__(self):
-        return self
+	def __init__(self):
+		return self
 
-    def fetch(str):
-        return str
+	def fetch(str):
+		return str
 
-    fetch = staticmethod(fetch)
+	fetch = staticmethod(fetch)
