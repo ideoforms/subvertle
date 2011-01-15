@@ -7,3 +7,6 @@ from substreamer import *
 from subdialect import *
 from subvocalsynth import *
 from submusicsynth import *
+
+from media import *
+from subtitle import * 

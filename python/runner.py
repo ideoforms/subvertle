@@ -26,7 +26,7 @@ def main(args):
 		#  - source.captions: list of caption events
 		#  - source.rtspUrl:  string URL of RTSP stream
 		print " - fetching feed information"
-		source = subfetch(settings.url).fetch()
+		source = subfetch().fetch(settings.url)
 		translator = subtranslate(settings.dialect)
 		moodmeter = submoodmeter()
 		streamer = substreamer()
