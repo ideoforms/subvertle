@@ -1,0 +1,13 @@
+1. GET PROGRAMME ID
+   http://www.bbc.co.uk/iplayer/episode/b00ht87j/Ready_Steady_Cook_Series_20_Episode_23/
+   => b00ht87j
+2. GET VERSION ID FROM PLAYLIST DATA
+   http://www.bbc.co.uk/iplayer/playlist/b00ht87j
+   <id>tag:bbc.co.uk,2008:pips:b00xjyg1</id>
+   => b00xjyg1
+3. GET MEDIA INFO
+   http://www.bbc.co.uk/mediaselector/4/mtis/stream/b00xjyg1
+   => http://www.bbc.co.uk/mediaselector/4/sdp/b00xjyg1/iplayer_streaming_n95_wifi
+4. GET RTSP
+   => rtsp://3gp-acl.bbc.co.uk:554/3gpclip/iPlayer/wifi_Ready_Steady_Cook_Series_20_Episode_23_b00xjyg1_1294657115.3gp
+

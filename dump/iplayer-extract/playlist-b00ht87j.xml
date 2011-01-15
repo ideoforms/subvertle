@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<playlist xmlns="http://bbc.co.uk/2008/emp/playlist" revision="1">
+  <config>
+    <plugin name="iPlayerLiveStats"/>
+  </config> 
+  <id>tag:bbc.co.uk,2008:pips:b00ht87j:playlist</id>
+  <link rel="self" href="http://www.bbc.co.uk/iplayer/playlist/b00ht87j/"/>
+  <link rel="alternate" href="http://www.bbc.co.uk/iplayer/episode/b00ht87j/Ready_Steady_Cook_Series_20_Episode_23/"/>
+  <link rel="holding" href="http://node2.bbcimg.co.uk/iplayer/images/episode/b00ht87j_640_360.jpg" height="360" width="640" type="image/jpeg" />
+  <link rel="masterbrand" href="http://www.bbc.co.uk/bbctwo" />
+  <title>Ready Steady Cook: Series 20: Episode 23</title>
+  <summary>Top fashion model agent and mentor Jonathan Phang goes head to head in the kitchen with one of his protegees, winner of Britain's Missing Top Model, Kelly Knox.</summary>
+  <updated>2011-01-04T19:25:37Z</updated>  <rights>
+    <right name="embed">unset</right>
+  </rights>
+  <item kind="ident">
+    <id>tag:bbc.co.uk,2008:pips:bbc_two</id>
+    <mediator identifier="bbc_two" name="pips"/>
+  </item>
+
+  <item kind="programme" duration="1800" identifier="b00xjyg1" group="b00ht87j" publisher="pips">
+    <id>tag:bbc.co.uk,2008:pips:b00xjyg1</id>
+    <service id="bbc_two" href="http://www.bbc.co.uk/iplayer/tv/bbc_two">BBC Two</service>
+    <masterbrand id="bbc_two" href="http://www.bbc.co.uk/iplayer/tv/bbc_two">BBC Two</masterbrand>
+    <programmeBrand id="b006vcgr">Ready Steady Cook</programmeBrand>
+    <passionSite href="http://www.bbc.co.uk/programmes/b006vcgr/microsite">Ready Steady Cook</passionSite>
+    <alternate id="default" />
+    <programmeSeries id="b00h8x8s">Series 20</programmeSeries>
+    <mediator identifier="b00xjyg1" name="pips"/>
+  </item>
+
+
+        
+		<relatedLink>
+			<id>tag:bbc.co.uk,2008:iplayer:concept_pid:b00hydld</id>
+			<title>Ready Steady Cook: Series 20: Episode 27</title>
+			<link rel="alternate" href="http://www.bbc.co.uk/iplayer/episode/b00hydld/Ready_Steady_Cook_Series_20_Episode_27/" />
+			<link rel="thumb" href="http://node2.bbcimg.co.uk/iplayer/images/episode/b00hydld_150_84.jpg" type="image/jpeg" width="150" height="84" />
+			<summary>Beijing Olympic sailing star Sarah Ayton and her windsurfing husband Nick Dempsey are the guests. But who will win our Ready Steady Cook gold medal? Ainsley Harriott hosts.</summary>
+		</relatedLink>
+		<relatedLink>
+			<id>tag:bbc.co.uk,2008:iplayer:concept_pid:b00hzgtq</id>
+			<title>Ready Steady Cook: Series 20: Episode 25</title>
+			<link rel="alternate" href="http://www.bbc.co.uk/iplayer/episode/b00hzgtq/Ready_Steady_Cook_Series_20_Episode_25/" />
+			<link rel="thumb" href="http://node2.bbcimg.co.uk/iplayer/images/episode/b00hzgtq_150_84.jpg" type="image/jpeg" width="150" height="84" />
+			<summary>Former Neighbours actors and friends Jason Donovan and Mark Little swap tales of shared Aussie roots and very different tastes in food in the kitchen cook-off with only one winner.</summary>
+		</relatedLink>
+</playlist>
