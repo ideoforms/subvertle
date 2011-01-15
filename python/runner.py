@@ -38,10 +38,10 @@ def main(args):
 			# print " -> %s" % caption.translated
 			# caption.mood = moodmeter.process(caption.text)
 
-		# print " - starting speech generator thread"
-		# settings.cachedir = settings.cachedir % source.id
-		# generator = thread(target = generate_thread, args = (settings, captions, queue))
-		# generator.start()
+		print " - starting speech generator thread"
+		settings.cachedir = settings.cachedir % source.id
+		generator = thread(target = generate_thread, args = (settings, captions, queue))
+		generator.start()
 
 		print " - buffering (%ds)" % settings.buffertime
 		time.sleep(settings.buffertime)
@@ -78,7 +78,7 @@ def init_settings(args):
 
 def generate_thread(settings, captions, queue):
 	""" thread to generate speech samples """
-	synth = subvocalsynth(cachedir = settings.cachedir)
+	synth = vocalsynth(cachedir = settings.cachedir)
 	for caption in captions:
 		# generate audio
 		caption.audiofile = synth.generate(caption)

@@ -1,4 +1,29 @@
 from singSomeText import *
+import os.path as path
+
+import time
+
 class vocalsynth(object):
-	def __init__(self):
-		pass
+	def __init__(self, cachedir = './'):
+		self.cachedir = cachedir
+		self.sst = singSomeText()
+		
+	def generate(self, caption):
+		if caption.style%5 == 0:
+			self.out = singThisText(caption.text, 'vox')
+		elif caption.style%5 == 1:
+			self.out = singThisText(caption.text, 'voxM1')
+		elif caption.style%5 == 2:
+			self.out = singThisText(caption.text, 'voxF2')
+		elif caption.style%5 == 3:
+			self.out = singThisText(caption.text, 'voxM2')
+		elif caption.style%5 == 4:
+			self.out = singThisText(caption.text, 'voxF3')
+		
+		
+		while not self.sst.isAudioAvailable(self.out):
+			time.sleep(1)
+		
+		self.sst.grabAudio(out, path.join(self.cachedir,caption.id +'.wav'))
+		
+	
