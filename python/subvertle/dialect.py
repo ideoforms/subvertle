@@ -10,7 +10,7 @@ class subdialect:
 		output = re.sub("\S+", "fuck", string)
 		return output
 
-class expletive (subdialect):
+class expletive (dialect):
 	def __init__(self):
 		self.tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+|[^\w\s]+')
 		self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())

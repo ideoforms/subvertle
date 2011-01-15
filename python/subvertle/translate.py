@@ -1,6 +1,6 @@
-from subdialect import *
+from dialect import *
 
-class subtranslate():
+class translate():
 	def __init__(self, dialectName):
 		self.dialect = expletive()
 

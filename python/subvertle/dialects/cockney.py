@@ -1,0 +1,4 @@
+
+class cockny(dialect)
+
+
