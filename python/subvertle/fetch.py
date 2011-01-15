@@ -8,11 +8,11 @@ import sys
 import urllib2
 import re
 import time
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse, parseString
 from subtitle import *
 from media import *
 
-class subfetch:
+class fetch:
 	urlre = re.compile('/episode/(.*?)/')
 	linere = re.compile('begin="([\d:\.]+)" id="(.*)" end="([\d:\.]+)">(.*)')
 	tagre = re.compile('<.*?>')
@@ -29,7 +29,7 @@ class subfetch:
 
 	def programID(self,programurl):
 		print "Program: "+programurl
-		m = subfetch.urlre.search(programurl);
+		m = fetch.urlre.search(programurl);
 		if (m==None):
 			print "Error: no URL match!"
 			return None
@@ -67,6 +67,32 @@ class subfetch:
 						rv['urlurl'] = connection.getAttribute("href")
 		return rv
 
+	def parseCaptions(self, xml):
+		print xml
+		rv = []
+		dom = parseString(xml)
+		captions = dom.getElementsByTagName("p")
+		for node in captions:
+			id = node.getAttribute("id");
+			begin = node.getAttribute("begin");
+			end = node.getAttribute("end");
+			style = node.getAttribute("style");
+			if not style:
+				style = "s0"
+			text = ""
+			print "%s: %s" % (id, node.childNodes)
+			for content in node.childNodes:
+				if content.nodeType == node.TEXT_NODE:
+					print content.nodeValue
+					text = text + content.nodeValue
+				elif content.tagName == "br":
+					text = text + " "
+			sub = subtitle(id, self.toSeconds(begin), self.toSeconds(end), style, text)
+			# print "%s: %s, %s, %s, %s" % (id, begin, end, style, text)
+			rv.append(sub)
+		return rv
+
+	"""
 	def XMLtoCaptions(self,xml):
 		lines = string.split(xml,"</p>")
 		rv = []
@@ -84,6 +110,7 @@ class subfetch:
 				#rv.append(cleanl)
 				rv.append(sub)
 		return rv
+	"""
 
 	def toSeconds(self,timestr):
 		hour = int(timestr[0:2])
@@ -111,11 +138,12 @@ class subfetch:
 		m.mediaDetails = self.parseMediaSelector(m.vpid)
 		print "RTSP URL URL: "+ m.mediaDetails['urlurl']
 		m.rtspUrl = self.getRTSPURL(m.mediaDetails['urlurl'])
-		print "RTSP: "+m.rtspUrl
+		print "..RTSP: "+m.rtspUrl
 		# get the subtitles
 		m.subs = self.getSubs(m.mediaDetails['suburl'])
+		print "SUBS"
 		# parse subtitle XML
-		m.captions = self.XMLtoCaptions(m.subs)
+		m.captions = self.parseCaptions(m.subs)
 		return m
 
 
