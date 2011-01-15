@@ -22,6 +22,7 @@ class subfetch:
 	def __init__(self):
 		self.urlre = re.compile('/episode/(.*?)/')
 		self.linere = re.compile('begin="([\d:\.]+)" id="(.*)" end="([\d:\.]+)">(.*)')
+		self.brre = re.compile('<br />')
 		self.tagre = re.compile('<.*?>')
 		self.suburlre = re.compile('"(.*?_prepared.xml)')
 		self.vpidre = re.compile('<item kind="programme".*?identifier="(.*?)".*?>')
@@ -75,7 +76,9 @@ class subfetch:
 				continue
 			else:
 				# id, start, end, TXT
-				cleantxt = self.tagre.sub('',m.group(4))
+				text = m.group(4)
+				text = self.brre.sub(' ', text)
+				cleantxt = self.tagre.sub('', text)
 				sub = subtitle(m.group(2),self.toSeconds(m.group(1)),self.toSeconds(m.group(3)),cleantxt)
 				#print cleanl
 				#rv.append(cleanl)

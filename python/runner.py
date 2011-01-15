@@ -34,18 +34,26 @@ def main(args):
 		print " - processing captions (%d)" % len(source.captions)
 		for caption in source.captions:
 			caption.translated = translator.process(caption.text)
-			caption.mood = moodmeter.process(caption.text)
+			# print caption.text
+			# print " -> %s" % caption.translated
+			# caption.mood = moodmeter.process(caption.text)
 
-		print " - starting speech generator thread"
-		settings.cachedir = settings.cachedir % source.id
-		generator = thread(target = generate_thread, args = (settings, captions, queue))
-		generator.start()
+		# print " - starting speech generator thread"
+		# settings.cachedir = settings.cachedir % source.id
+		# generator = thread(target = generate_thread, args = (settings, captions, queue))
+		# generator.start()
 
 		print " - buffering (%ds)" % settings.buffertime
 		time.sleep(settings.buffertime)
 
-		streamer.stream(source.rtspUrl)
-		vocals = thread(target = vocal_thread, args = (queue,))
+		sayqueue = Queue()
+		sayer = thread(target = sayer_thread, args = (sayqueue,))
+		sayer.start()
+
+		# streamer.stream(source.rtspUrl)
+		for caption in source.captions:
+			queue.put(caption)
+		vocals = thread(target = vocal_thread, args = (queue,sayqueue))
 		vocals.start()
 
 	# except Exception, e:
@@ -82,16 +90,23 @@ def music_thread(captions):
 	""" generates some music """
 	pass
 
-def vocal_thread(queue):
+def sayer_thread(queue):
+	while True:
+		text = queue.get()
+		os.system('say "%s" 2>/dev/null' % text)
+
+def vocal_thread(queue, sayqueue):
 	""" runs through a queue of upcoming events, ordered by expected time """
 	t0 = time.time()
 	# probably need some try/except stuff in here
 	nextEvent = queue.get()
 	while True:
 		now = time.time() - t0
+		# print "now %f, next %d\n" % (now, nextEvent.start)
 		if now > nextEvent.start:
 			# handle audio event
-			print nextEvent
+			print nextEvent.translated
+			sayqueue.put(nextEvent.translated)
 			nextEvent = queue.get()
 			
 		time.sleep(settings.clockperiod)
