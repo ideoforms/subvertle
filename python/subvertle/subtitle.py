@@ -8,7 +8,7 @@ class subtitle:
 	
 	def __init__(self,id,start,end,text):
 		self.id=id
-		self.start=start
-		self.end=end
-		self.text=text
+		self.start=float(start)
+		self.end=float(end)
+		self.text=float(text)
 
