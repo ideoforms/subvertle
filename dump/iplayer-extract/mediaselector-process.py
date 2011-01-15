@@ -5,7 +5,7 @@
 
 from xml.dom.minidom import parse
 
-dom = parse("mediaselector-b00xjyg1.xml");
+dom = parse("mediaselector.xml");
 root = dom.childNodes[0];
 for node in root.childNodes:
     if node.nodeType == node.ELEMENT_NODE:

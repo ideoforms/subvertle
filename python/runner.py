@@ -26,10 +26,10 @@ def main(args):
 		#  - source.captions: list of caption events
 		#  - source.rtspUrl:  string URL of RTSP stream
 		print " - fetching feed information"
-		source = subfetch().fetch(settings.url)
-		translator = subtranslate(settings.dialect)
-		moodmeter = submoodmeter()
-		streamer = substreamer()
+		source = fetch().fetch(settings.url)
+		translator = translate(settings.dialect)
+		moodmeter = moodmeter()
+		streamer = streamer()
 
 		print " - processing captions (%d)" % len(source.captions)
 		for caption in source.captions:
@@ -91,9 +91,10 @@ def music_thread(captions):
 	pass
 
 def sayer_thread(queue):
+	voices = [ "Fred", "Vicki", "Victoria", "Bruce", "Junior", "Agnes" ]
 	while True:
-		text = queue.get()
-		os.system('say "%s" 2>/dev/null' % text)
+		caption = queue.get()
+		os.system('say -v %s "%s" 2>/dev/null' % (voices[caption.style], caption.translated))
 
 def vocal_thread(queue, sayqueue):
 	""" runs through a queue of upcoming events, ordered by expected time """
@@ -106,7 +107,7 @@ def vocal_thread(queue, sayqueue):
 		if now > nextEvent.start:
 			# handle audio event
 			print nextEvent.translated
-			sayqueue.put(nextEvent.translated)
+			sayqueue.put(nextEvent)
 			nextEvent = queue.get()
 			
 		time.sleep(settings.clockperiod)

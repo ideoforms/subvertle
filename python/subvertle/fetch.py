@@ -70,6 +70,7 @@ class fetch:
 	def parseCaptions(self, xml):
 		print xml
 		rv = []
+		styles = []
 		dom = parseString(xml)
 		captions = dom.getElementsByTagName("p")
 		for node in captions:
@@ -78,15 +79,23 @@ class fetch:
 			end = node.getAttribute("end");
 			style = node.getAttribute("style");
 			if not style:
-				style = "s0"
+				style = ""
+
+			if style in styles:
+				style = styles.index(style)
+			else:
+				styles.append(style)
+				style = len(styles)
+
 			text = ""
-			print "%s: %s" % (id, node.childNodes)
 			for content in node.childNodes:
 				if content.nodeType == node.TEXT_NODE:
 					print content.nodeValue
 					text = text + content.nodeValue
 				elif content.tagName == "br":
 					text = text + " "
+				elif len(content.childNodes) > 0:
+					text = text + content.childNodes[0].nodeValue
 			sub = subtitle(id, self.toSeconds(begin), self.toSeconds(end), style, text)
 			# print "%s: %s, %s, %s, %s" % (id, begin, end, style, text)
 			rv.append(sub)
