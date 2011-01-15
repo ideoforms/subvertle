@@ -10,5 +10,5 @@ class subtitle:
 		self.id=id
 		self.start=float(start)
 		self.end=float(end)
-		self.text=float(text)
+		self.text=text
 
