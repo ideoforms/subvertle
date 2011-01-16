@@ -7,8 +7,11 @@
 
 import os
 import sys
+import wave
 import getopt
 import settings
+import pyaudio
+import swmixer
 from threading import Thread as thread
 from Queue import Queue
 from subvertle import *
@@ -37,6 +40,10 @@ def main(args):
 			# print caption.text
 			# print " -> %s" % caption.translated
 			# caption.mood = mood.process(caption.text)
+
+		print " - initialising audio"
+		swmixer.init(samplerate = 44100, chunksize = 1024)
+		swmixer.start()
 
 		print " - starting speech generator thread"
 		settings.cachedir = settings.cachedir % source.id
@@ -112,10 +119,15 @@ def vocal_thread(queue, sayqueue):
 			# handle audio event
 			print nextEvent.translated
 			print "file: %s" % nextEvent.audiofile
-			sayqueue.put(nextEvent)
+			snd = swmixer.Sound(nextEvent.audiofile)
+			snd.play()
+
+			# sayqueue.put(nextEvent)
 			nextEvent = queue.get()
+
 			
 		time.sleep(settings.clockperiod)
+
 
 def usage():
 	print "usage: runner.py [-d dialect] [url]"
