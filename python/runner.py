@@ -80,10 +80,11 @@ def init_settings(args):
 		if len(args) > 0:
 			settings.url = args[0]
 
-	settings.dialectOptions = ['fr']
 	except:
 		usage()
 		sys.exit(1)
+
+	settings.dialectOptions = ['fr']
 
 	print "	     url: %s" % settings.url
 	print "  dialect: %s" % settings.dialect

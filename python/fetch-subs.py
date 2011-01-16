@@ -10,7 +10,7 @@ if len(sys.argv) < 2:
 	sys.exit()
 
 source = fetch().fetch(sys.argv[1])
-dialect = translate("language",["fr"])
+dialect = translate("language",["fr","en"])
 # translator = translate(settings.dialect)
 
 for caption in source.captions:
