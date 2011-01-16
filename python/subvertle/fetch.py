@@ -122,10 +122,12 @@ class fetch:
 	"""
 
 	def toSeconds(self,timestr):
-		hour = int(timestr[0:2])
-		min = int(timestr[3:5])
-		sec = int(timestr[6:8])
-		return float(str(hour*3600 + min*60 + sec) + timestr[8:11])
+		m = re.search(r'^(\d+):(\d+):(\d+)\.(\d+)', timestr)
+		hour = int(m.group(1))
+		min = int(m.group(2))
+		sec = int(m.group(3))
+		ms = int(m.group(4))
+		return hour * 3600 + min * 60 + sec + ms / 1000.0
 
 	# traverse the url indirection
 	def getRTSPURL(self,urlurl):
