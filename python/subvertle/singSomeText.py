@@ -123,11 +123,11 @@ class singSomeText():
 		"""
 		req = urllib2.urlopen(task_ob['output']+"/serve?api_key="+API_KEY)
 		CHUNK = 16 * 1024
-		with open(file_name, 'wb') as fp:
-		  while True:
-		    chunk = req.read(CHUNK)
-		    if not chunk: break
-		    fp.write(chunk)
+		fp = open(file_name, 'wb')
+		while True:
+			chunk = req.read(CHUNK)
+			if not chunk: break
+			fp.write(chunk)
 	
 	
 
