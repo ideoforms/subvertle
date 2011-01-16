@@ -29,7 +29,7 @@ class expletive (dialectp):
 				continue
 			# # # print "%s: %s" % (type, word)
 			if type and type[0] == 'N' and random.random() < 0.4:
-				swear = makeSwear()
+				swear = self.makeSwear()
 				text = re.sub(r"\b%s\b" % word, "%s %s" % swear, word, text)
 				done[word] = 1
 
