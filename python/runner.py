@@ -28,15 +28,15 @@ def main(args):
 		print " - fetching feed information"
 		source = fetch().fetch(settings.url)
 		translator = translate(settings.dialect)
-		moodmeter = moodmeter()
-		streamer = streamer()
+		mood = moodmeter()
+		stream = streamer()
 
 		print " - processing captions (%d)" % len(source.captions)
 		for caption in source.captions:
 			caption.translated = translator.process(caption.text)
 			# print caption.text
 			# print " -> %s" % caption.translated
-			# caption.mood = moodmeter.process(caption.text)
+			# caption.mood = mood.process(caption.text)
 
 		print " - starting speech generator thread"
 		settings.cachedir = settings.cachedir % source.id

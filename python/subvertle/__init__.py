@@ -10,3 +10,5 @@ from musicsynth import *
 
 from media import *
 from subtitle import * 
+
+import dialect
