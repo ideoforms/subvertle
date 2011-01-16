@@ -10,7 +10,7 @@ class vocalsynth(object):
 		
 	def generate(self, caption):
 		filename = path.join(self.cachedir,caption.id +'.wav')
-
+		
 		# got precached version of this speech
 		if os.path.exists(filename):
 			return filename
