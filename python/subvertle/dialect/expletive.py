@@ -8,16 +8,18 @@ class expletive (dialectp):
 	def __init__(self):
 		self.tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+|[^\w\s]+')
 		self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())
-		makeSwear()
+		self.makeSwear()
 
-	def makeSwear():
-		fd = open("swearwords.dat")
+	def makeSwear(self):
+		fd = open("subvertle/dialect/swearwords.dat")
 		for line in fd.readlines():
-			swears.append(line)
+			self.swears.append(line)
 
-	def getSwear():
-		index = random.paretodistribution(alpha)*len(swears)
-		return swears[index]
+	def getSwear(self):
+		index = random.paretovariate(self.alpha)*len(self.swears)
+		print "length: %d random $d" % len(self.swears),index 
+		index = 1
+		return self.swears[int(index)]
 
 	def process(self, text):
 		tokenized = self.tokenizer.tokenize(text)
@@ -29,7 +31,7 @@ class expletive (dialectp):
 				continue
 			# # # print "%s: %s" % (type, word)
 			if type and type[0] == 'N' and random.random() < 0.4:
-				swear = self.makeSwear()
+				swear = self.getSwear()
 				text = re.sub(r"\b%s\b" % word, "%s %s" % swear, word, text)
 				done[word] = 1
 

@@ -8,14 +8,8 @@ class translate(dialectp):
 		self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())
 		self.makeSwear()
 
-	def makeSwear(self):
-		fd = open("subvertle/dialect/swearwords.dat")
-		for line in fd.readlines():
-			self.swears.append(line)
-
-	def getSwear(self):
-		index = random.paretovariate(self.alpha)*len(self.swears)
-		return self.swears[index]
+	def translate(self,string):
+		return string
 
 	def process(self, text):
 		tokenized = self.tokenizer.tokenize(text)
