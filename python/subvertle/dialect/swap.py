@@ -1,13 +1,13 @@
 
-class cockny(dialect)
+class swap(dialect)
 	lookup={}
 
-	def __init__(self):
+	def __init__(self,map):
 		self.__init__(self)
-		self.makeLookup()
+		self.makeLookup(map)
 
-	def makeLookup(self):
-		fd = open("cockney.dat") 
+	def makeLookup(self,map):
+		fd = open(map) 
 		for line in fd.readlines():
 			relation = split(line,'\t')
 			lookup{relation[1].lower}=relation[0].lower
