@@ -20,7 +20,7 @@ oDH.close()
 print 'tokenizing...'
 
 documents = iH.readlines()
-texts = [[word for word in document.lower().split() if word not in stoplist]
+texts = [[word.strip('.~!,') for word in document.lower().split() if word not in stoplist]
 			for document in documents]
 allTokens = sum(texts, [])
 tokensOnce = set(word for word in set(allTokens) if allTokens.count(word) == 1)
@@ -28,7 +28,8 @@ texts = [[word for word in text if word not in tokensOnce]
 			for text in texts]
 
 print "creating dictionary..."
-dictionary = corpora.Dictionary(texts)
+dictionary = corpora.dictionary.Dictionary(texts)
+print "numPos:", dictionary.numPos, "\tnumDocs:", dictionary.numDocs
 dictionary.save(sys.argv[3])
 
 print "creating corpus..."
