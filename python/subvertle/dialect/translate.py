@@ -1,25 +1,15 @@
 import random
 from dialectp import *
 
-class expletive (dialectp):
-	swears=[]
-	alpha = 1
+class translate(dialectp):
 
 	def __init__(self):
 		self.tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+|[^\w\s]+')
 		self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())
 		self.makeSwear()
 
-	def makeSwear(self):
-		fd = open("subvertle/dialect/swearwords.dat")
-		for line in fd.readlines():
-			self.swears.append(line)
-
-	def getSwear(self):
-		index = random.paretovariate(self.alpha)*len(self.swears)
-		print "length: %d random $d" % len(self.swears),index 
-		index = 1
-		return self.swears[int(index)]
+	def translate(self,string):
+		return string
 
 	def process(self, text):
 		tokenized = self.tokenizer.tokenize(text)
