@@ -10,7 +10,7 @@ class swap(dialect)
 		fd = open(map) 
 		for line in fd.readlines():
 			relation = split(line,'\t')
-			lookup{relation[1].lower}=relation[0].lower
+			lookup{relation[0].lower}=relation[1].lower
 
 	def process(string):
 		slang=[]
