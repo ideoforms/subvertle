@@ -15,3 +15,4 @@ class subtitle:
 		self.text = text
 		self.translated = ""
 		self.mood = ""
+		self.audiofile = "none.wav"

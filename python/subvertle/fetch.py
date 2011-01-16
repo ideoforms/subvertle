@@ -125,7 +125,7 @@ class fetch:
 		hour = int(timestr[0:2])
 		min = int(timestr[3:5])
 		sec = int(timestr[6:8])
-		return str(hour*3600 + min*60 + sec) + timestr[8:11]
+		return float(str(hour*3600 + min*60 + sec) + timestr[8:11])
 
 	# traverse the url indirection
 	def getRTSPURL(self,urlurl):

@@ -40,7 +40,11 @@ def main(args):
 
 		print " - starting speech generator thread"
 		settings.cachedir = settings.cachedir % source.id
-		generator = thread(target = generate_thread, args = (settings, captions, queue))
+		# should really handle fail here
+		if not os.path.exists(settings.cachedir):
+			os.mkdir(settings.cachedir)
+
+		generator = thread(target = generate_thread, args = (settings, source.captions, queue))
 		generator.start()
 
 		print " - buffering (%ds)" % settings.buffertime
@@ -51,8 +55,8 @@ def main(args):
 		sayer.start()
 
 		# streamer.stream(source.rtspUrl)
-		for caption in source.captions:
-			queue.put(caption)
+		# for caption in source.captions:
+		# 	queue.put(caption)
 		vocals = thread(target = vocal_thread, args = (queue,sayqueue))
 		vocals.start()
 
@@ -103,10 +107,11 @@ def vocal_thread(queue, sayqueue):
 	nextEvent = queue.get()
 	while True:
 		now = time.time() - t0
-		# print "now %f, next %d\n" % (now, nextEvent.start)
+		# print "now %f, next %d" % (now, nextEvent.start)
 		if now > nextEvent.start:
 			# handle audio event
 			print nextEvent.translated
+			print "file: %s" % nextEvent.audiofile
 			sayqueue.put(nextEvent)
 			nextEvent = queue.get()
 			
