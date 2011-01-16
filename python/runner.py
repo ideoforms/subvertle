@@ -30,7 +30,7 @@ def main(args):
 		#  - source.rtspUrl:  string URL of RTSP stream
 		print " - fetching feed information"
 		source = fetch().fetch(settings.url)
-		translator = translate(settings.dialect)
+		translator = translate(settings.dialect,settings.dialectOptions)
 		mood = moodmeter()
 		stream = streamer()
 
@@ -80,12 +80,14 @@ def init_settings(args):
 		if len(args) > 0:
 			settings.url = args[0]
 
+	settings.dialectOptions = ['fr']
 	except:
 		usage()
 		sys.exit(1)
 
 	print "	     url: %s" % settings.url
 	print "  dialect: %s" % settings.dialect
+	print "  dialectOptions: %s" % settings.dialectOptions
 
 def generate_thread(settings, captions, queue):
 	""" thread to generate speech samples """

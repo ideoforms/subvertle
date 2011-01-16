@@ -4,8 +4,6 @@ import re
 
 class dialectp:
     def __init__(self,other):
-        self.tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+|[^\w\s]+')
-        self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())
 
 	def process(string):
 		output = re.sub("\S+", "fuck", string)
