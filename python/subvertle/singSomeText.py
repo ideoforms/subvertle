@@ -104,7 +104,7 @@ class singSomeText():
 					(int(math.log(len(syl)+1)*noteTuple[0]),noteTuple[1],noteTuple[2],joinedPhonemes)
 			xmlString += """<rest duration='%i'/>"""%self.breaklength
 		xmlString += "</melody>"
-		print xmlString
+		print "synthesizing vocals..."
 		task_ob = canoris.Task.create_task(templateName,{'substitute_this':xmlString})
 		return task_ob
 		
