@@ -80,6 +80,7 @@ def get():
 
 @app.route('/start')
 def start():
+	print "starting say thread"
 	sayqueue = Queue()
 	sayer = thread(target = sayer_thread, args = (sayqueue,))
 	sayer.start()

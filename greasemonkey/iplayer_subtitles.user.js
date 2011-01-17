@@ -98,6 +98,7 @@ function startCaptions()
 	startTime = emp.getCurrentTimecode();
 	document.title = "seek: " + startTime;
 	setCaptionIndex(startTime);
+	$.getJSON('http://localhost:5000/start', { });
 	
 	t0 = (new Date).getTime();
 //	document.title = "time: " + t0;
