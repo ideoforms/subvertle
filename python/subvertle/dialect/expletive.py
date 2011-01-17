@@ -44,7 +44,7 @@ class expletive (dialectp):
 			# # # print "%s: %s" % (type, word)
 			if type and type[0] == 'N' and random.random() < 0.4:
 				swear = self.getSwear()
-				text = re.sub(word, r" \b%s\b %s" % (swear, word), text)
+				text = re.sub(word, r" \b%s\b%s" % (swear, word), text)
 				done[word] = 1
 
 		return text

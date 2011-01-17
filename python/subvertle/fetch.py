@@ -68,7 +68,6 @@ class fetch:
 		return rv
 
 	def parseCaptions(self, xml):
-		print xml
 		rv = []
 		styles = []
 		dom = parseString(xml)
@@ -90,7 +89,7 @@ class fetch:
 			text = ""
 			for content in node.childNodes:
 				if content.nodeType == node.TEXT_NODE:
-					print content.nodeValue
+					# print content.nodeValue
 					text = text + content.nodeValue
 				elif content.tagName == "br":
 					text = text + " "
@@ -138,7 +137,7 @@ class fetch:
 		response = urllib2.urlopen(url)
 		return response.read()
 
-	def fetch(self,url):
+	def fetch(self,url, manual = False):
 		# begin the long road of boring translation
 		id = self.programID(url)
 		print "Program ID: "+id
@@ -154,6 +153,9 @@ class fetch:
 		m.subs = self.getSubs(m.mediaDetails['suburl'])
 		print "SUBS"
 		# parse subtitle XML
+		# HACK! HACK! HACK!
+		# if manual:
+		# 	m.subs = open('hustle-spanish.xml', 'r').read()
 		m.captions = self.parseCaptions(m.subs)
 		return m
 
