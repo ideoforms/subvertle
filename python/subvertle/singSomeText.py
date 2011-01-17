@@ -19,11 +19,11 @@ from my_key import API_KEY
 
 
 canoris.Canoris.set_api_key(API_KEY)
-DEFAULT_MELODY = [(40, 60, 100),
-					(40, 62, 100),
-					(40, 64, 100),
-					(40, 67, 100),
-					(40, 69, 100)]
+DEFAULT_MELODY = [(30, 60, 100),
+					(30, 62, 100),
+					(30, 64, 100),
+					(30, 67, 100),
+					(30, 69, 100)]
 
 class melodypopper(object):
 	def __init__(self, melody = []):
@@ -121,6 +121,7 @@ class singSomeText():
 		"""
 		download audio from task_ob.  Assumes it's available, will fall over if not.  Saves wavefile to file_name, which should alread have the appropriate extension.
 		"""
+		print "dl'ing "+task_ob['output']+"/serve?api_key="+API_KEY
 		req = urllib2.urlopen(task_ob['output']+"/serve?api_key="+API_KEY)
 		CHUNK = 16 * 1024
 		fp = open(file_name, 'wb')
