@@ -6,8 +6,6 @@ import urllib2
 import re
 import time
 from xml.dom.minidom import parse, parseString
-from subtitle import *
-from media import *
 
 class fetch:
 	def __init__(self):
