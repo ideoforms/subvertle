@@ -13,6 +13,11 @@ class fetch:
 		self.urlre = re.compile('/episode/(.*?)/')
 		self.vpidre = re.compile('<item kind="programme".*?identifier="(.*?)".*?>')
 
+	def getWebData(self, url):
+		""" may be able to do this with socks proxy: http://stackoverflow.com/questions/2879183/problem-with-urllib """
+		response = urllib2.urlopen(url)
+		return response.read()
+
 	def getProgramID(self, programurl):
 		print "Program: " + programurl
 		m = self.urlre.search(programurl);
@@ -23,8 +28,9 @@ class fetch:
 
 	def getVPID(self,id):
 		url = "http://www.bbc.co.uk/iplayer/playlist/%s " % id
-		response = urllib2.urlopen(url)
-		m = self.vpidre.search(response.read())
+		content = self.getWebData(url)
+		print "content: %s" % content
+		m = self.vpidre.search(content)
 		if (m):
 			return m.group(1)
 		else:
@@ -33,18 +39,22 @@ class fetch:
 	def parseMediaSelector(self,id):
 		""" pull out available media descriptions """
 		url = "http://www.bbc.co.uk/mediaselector/4/mtis/stream/%s" % id
-		response = urllib2.urlopen(url)
+		print "getting: %s" % url
+		content = self.getWebData(url)
+		print "got content: %s" % content
 		rv = {}
-		dom = parse(response)
+		dom = parseString(content)
 		root = dom.childNodes[0];
+
 		for node in root.childNodes:
+			print "node %s" % node
 			if node.nodeType == node.ELEMENT_NODE:
 				# kind = { video, captions }
-				kind = node.getAttribute("kind");
+				kind = node.getAttribute("kind")
 				if kind == "captions":
 					connection = node.childNodes[0]
 					print "subtitles: %s" % connection.getAttribute("href")
-					rv['suburl']=connection.getAttribute("href")
+					rv['suburl'] = connection.getAttribute("href")
 				elif kind == "video":
 					service = node.getAttribute("service")
 					if service == "iplayer_streaming_n95_wifi":
@@ -101,7 +111,7 @@ class fetch:
 
 	def getRTSPURL(self, ramurl):
 		""" given the URL of a RAM file, returns the first stream (ie, first line of file) """
-		response = urllib2.urlopen(ramurl)
+		response = urllib2.urlopen(url)
 		return response.read()
 
 	def getSubtitles(self,url):
@@ -135,7 +145,7 @@ class fetch:
 		#-----------------------------------------------------------------------
 		if 'ramurl' in m.mediaDetails:
 			print "RAM URL: "+ m.mediaDetails['ramurl']
-			m.rtspUrl = self.getRTSPURL(m.mediaDetails['ramurl'])
+			m.rtspUrl = self.getWebData(m.mediaDetails['ramurl'])
 			print "RTSP URL: "+m.rtspUrl
 		else:
 			print "no RTSP URL found :-("
@@ -143,8 +153,9 @@ class fetch:
 		#-----------------------------------------------------------------------
 		# 5. download and parse captions
 		#-----------------------------------------------------------------------
-		m.subtitleXML = self.getSubtitles(m.mediaDetails['suburl'])
+		m.subtitleXML = self.getWebData(m.mediaDetails['suburl'])
 		m.captions = self.parseCaptions(m.subtitleXML)
+		print "got captions: %s" % m.captions
 
 		return m
 
