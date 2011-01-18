@@ -1,4 +1,5 @@
 import random
+import os
 from dialectp import *
 
 class expletive (dialectp):
@@ -14,22 +15,22 @@ class expletive (dialectp):
 		self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())
 		self.makeSwear()
 
-	def ignoreWord(self,word):
-		if (self.blacklist.has_key(word)):
+	def ignoreWord(self, word):
+		if word in self.blacklist:
 			return True
 		return False
 
 	def makeSwear(self):
-		fd = open("subvertle/dialect/swearwords.dat")
+		# fd = open("subvertle/dialect/swearwords.dat")
+		datfile = os.path.join(os.path.dirname(__file__), "swearwords.dat")
+		fd = open(datfile)
 		for line in fd.readlines():
-			self.swears.append(line)
+			self.swears.append(line.rstrip())
 
 	def getSwear(self):
 		#print "swear count: %d"%len(self.swears)
 		#index = random.paretovariate(self.alpha)*(len(self.swears)-1)
-		index = random.random()*len(self.swears)
-		#print "swear length: %d random %d" % (len(self.swears),index)
-		return self.swears[int(index)]
+		return random.choice(self.swears)
 
 	def process(self, text):
 		tokenized = self.tokenizer.tokenize(text)

@@ -4,7 +4,7 @@
 // @description   Display multilingual subtitles for BBC iPlayer
 // @include       http://www.bbc.co.uk/iplayer/*
 // @require       http://jqueryjs.googlecode.com/files/jquery-1.3.2.min.js
-// @require       http://localhost:5000/static/xhr.js
+// @require       http://courses.ischool.berkeley.edu/i290-4/f09/resources/gm_jq_xhr.js
 // ==/UserScript==
 
 
@@ -15,6 +15,7 @@ var emp = 0;
 var timer = 0;
 var startTime = 0.0;
 var nextCaptionIndex = 0;
+var webHost = "http://localhost:5000";
 
 function addStyle(css)
 {
@@ -43,7 +44,7 @@ function addMarkup()
            '<select name="lang" id="subtitle_lang">' + languageopts +
            '</select>' +
            '<input type="button" id="subtitles_enable" value="Enable subtitles" />' +
-           '<img src="http://localhost:5000/static/spinner.gif" id="subtitles_spinner" alt="spinner" />' +
+           '<img src="' + webHost + '/static/spinner.gif" id="subtitles_spinner" alt="spinner" />' +
 //           '<input type="button" id="subtitles_start" value="Start" />' +
            '</div>' +
            '<div id="caption"></div>' +
@@ -74,7 +75,7 @@ function getCaptions()
 	
 	$("#subtitles_spinner").addClass("active");
 	
-	$.getJSON('http://localhost:5000/get',
+	$.getJSON(webHost + '/get',
 	{
 		url: 		window.location.href,
 		dialect: 	dialect
@@ -96,13 +97,11 @@ function hideCaptions()
 function startCaptions()
 {
 	startTime = emp.getCurrentTimecode();
-	document.title = "seek: " + startTime;
+	// document.title = "seek: " + startTime;
 	setCaptionIndex(startTime);
-	$.getJSON('http://localhost:5000/start', { });
+	$.getJSON(webHost + '/start', { });
 	
 	t0 = (new Date).getTime();
-//	document.title = "time: " + t0;
-	$.getJSON('http://localhost:5000/start', { });
 	timer = setInterval(tick, 50);
 }
 
@@ -120,7 +119,7 @@ function addCallbacks()
 
 function addPlayerCallbacks()
 {
-	document.title = "adding callbacks";
+	// document.title = "adding callbacks";
 	
 	setTimeout(function () {
 		emp._emp.onMediaPlaying = function () { startCaptions(); };
@@ -144,11 +143,6 @@ $(document).ready(function()
 		};
 	}, 100);
 });
-
-
-//$('#subtitles_read').bind('click', function() {
-//    $.getJSON('http://localhost:5000/start', { });
-//});
 
 function tick()
 {

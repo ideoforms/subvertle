@@ -1,0 +1,9 @@
+TODO
+* Make screen capture of Human Planet for Vimeo.
+* Get permanent webserver set up on translate.subvertle.com
+* Test under stress (what happens if video skips/buffers?)
+  Might be able to swap out setInterval timer for iPlayer play event callback.
+* Less intensive Google Translate calls
+* Clean up capitalisation and other quirks in text translator
+* Full-screen mode: is it even possible to overlay CSS in full-screen mode?
+* Integrate "say" and "sing" modes to use the same API

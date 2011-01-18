@@ -30,15 +30,15 @@ def main(args):
 		#  - source.rtspUrl:  string URL of RTSP stream
 		print " - fetching feed information"
 		source = fetch().fetch(settings.url)
-		# translator = translate(settings.dialect,settings.dialectOptions)
+		translator = translate(settings.dialect,settings.dialectOptions)
 		mood = moodmeter()
 		stream = streamer()
 
 		print " - processing captions (%d)" % len(source.captions)
 		for caption in source.captions:
 			# skip translation for now
-			# caption.translated = translator.process(caption.text)
-			caption.translated = caption.text
+			caption.translated = translator.process(caption.text)
+			# caption.translated = caption.text
 			# print caption.text
 			# print " -> %s" % caption.translated
 			# caption.mood = mood.process(caption.text)
