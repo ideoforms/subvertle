@@ -1,8 +1,5 @@
 #!/usr/bin/perl
 
-# Given an iPlayer URL return subtitle list in format:
-# id, start, end, text
-
 import string
 import sys
 import urllib2
@@ -13,42 +10,33 @@ from subtitle import *
 from media import *
 
 class fetch:
-	urlre = re.compile('/episode/(.*?)/')
-	linere = re.compile('begin="([\d:\.]+)" id="(.*)" end="([\d:\.]+)">(.*)')
-	tagre = re.compile('<.*?>')
-	suburlre = re.compile('"(.*?_prepared.xml)')
-	vpidre = re.compile('<item kind="programme".*?identifier="(.*?)".*?>')
-
 	def __init__(self):
+		""" some regexps needed for later parsing """
 		self.urlre = re.compile('/episode/(.*?)/')
-		self.linere = re.compile('begin="([\d:\.]+)" id="(.*)" end="([\d:\.]+)">(.*)')
-		self.brre = re.compile('<br />')
-		self.tagre = re.compile('<.*?>')
-		self.suburlre = re.compile('"(.*?_prepared.xml)')
 		self.vpidre = re.compile('<item kind="programme".*?identifier="(.*?)".*?>')
 
-	def programID(self,programurl):
-		print "Program: "+programurl
-		m = fetch.urlre.search(programurl);
-		if (m==None):
-			print "Error: no URL match!"
+	def getProgramID(self, programurl):
+		print "Program: " + programurl
+		m = self.urlre.search(programurl);
+		if m == None:
+			raise ValueError, "Couldn't extract program ID from URL: %s" % programurl
 			return None
 		return m.group(1)
 
 	def getVPID(self,id):
-		url = "http://www.bbc.co.uk/iplayer/playlist/"+id
+		url = "http://www.bbc.co.uk/iplayer/playlist/%s " % id
 		response = urllib2.urlopen(url)
 		m = self.vpidre.search(response.read())
 		if (m):
 			return m.group(1)
-		print "Error: cant find pips :/"
-		sys.exit(1)
+		else:
+			raise ValueError, "Couldn't extract PIP value from URL: %s" % url
 
-	# pull out media descriptions
 	def parseMediaSelector(self,id):
-		url="http://www.bbc.co.uk/mediaselector/4/mtis/stream/"+id
+		""" pull out available media descriptions """
+		url = "http://www.bbc.co.uk/mediaselector/4/mtis/stream/%s" % id
 		response = urllib2.urlopen(url)
-		rv={}
+		rv = {}
 		dom = parse(response)
 		root = dom.childNodes[0];
 		for node in root.childNodes:
@@ -64,10 +52,11 @@ class fetch:
 					if service == "iplayer_streaming_n95_wifi":
 						connection = node.childNodes[0]
 						print "video: %s" % connection.getAttribute("href")
-						rv['urlurl'] = connection.getAttribute("href")
+						rv['ramurl'] = connection.getAttribute("href")
 		return rv
 
 	def parseCaptions(self, xml):
+		""" parse caption XML (TT) into a list of subtitle objects """
 		rv = []
 		styles = []
 		dom = parseString(xml)
@@ -100,80 +89,105 @@ class fetch:
 			rv.append(sub)
 		return rv
 
-	"""
-	def XMLtoCaptions(self,xml):
-		lines = string.split(xml,"</p>")
-		rv = []
-		for line in lines:
-			m = self.linere.search(line)
-			if (m==None):
-				continue
-			else:
-				# id, start, end, TXT
-				text = m.group(4)
-				text = self.brre.sub(' ', text)
-				cleantxt = self.tagre.sub('', text)
-				sub = subtitle(m.group(2),self.toSeconds(m.group(1)),self.toSeconds(m.group(3)),cleantxt)
-				#print cleanl
-				#rv.append(cleanl)
-				rv.append(sub)
-		return rv
-	"""
-
-	def toSeconds(self,timestr):
+	def toSeconds(self, timestr):
+		""" turn a Timed Text time string into a floating point value in seconds """
 		m = re.search(r'^(\d+):(\d+):(\d+)\.(\d+)', timestr)
-		hour = int(m.group(1))
-		min = int(m.group(2))
-		sec = int(m.group(3))
-		ms = int(m.group(4))
-		return hour * 3600 + min * 60 + sec + ms / 1000.0
+		if m:
+			hour = int(m.group(1))
+			min = int(m.group(2))
+			sec = int(m.group(3))
+			ms = int(m.group(4))
+			return hour * 3600 + min * 60 + sec + ms / 1000.0
+		else:
+			raise ValueError, "Could not parse TT time value: %s" % timestr
 
-	# traverse the url indirection
-	def getRTSPURL(self,urlurl):
-		response = urllib2.urlopen(urlurl)
+	def getRTSPURL(self, ramurl):
+		""" given the URL of a RAM file, returns the first stream (ie, first line of file) """
+		response = urllib2.urlopen(ramurl)
 		return response.read()
 
-	def getSubs(self,url):
+	def getSubtitles(self,url):
+		""" fetch subtitle XML file """
 		response = urllib2.urlopen(url)
 		return response.read()
 
 	def fetch(self,url, manual = False):
-		# begin the long road of boring translation
-		id = self.programID(url)
-		print "Program ID: "+id
-		m = media(id)
+		""" begin the long boring road of subtitle extraction """
+
+		#-----------------------------------------------------------------------
+		# 1. extract programme ID from its URL
+		#-----------------------------------------------------------------------
+		id = self.getProgramID(url)
+		print "Program ID: " + id
+
+		#-----------------------------------------------------------------------
+		# 2. download playlist XML, and extract programme version ID 
+		#-----------------------------------------------------------------------
+		m = mediaSource(id)
 		m.vpid = self.getVPID(m.id)
-		print "VPID: "+m.vpid
-		# get details of this programme
+		print "VPID: " + m.vpid
+
+		#-----------------------------------------------------------------------
+		# 3. download mediaselector XML for stream source details
+		#-----------------------------------------------------------------------
 		m.mediaDetails = self.parseMediaSelector(m.vpid)
-		print "RTSP URL URL: "+ m.mediaDetails['urlurl']
-		m.rtspUrl = self.getRTSPURL(m.mediaDetails['urlurl'])
-		print "..RTSP: "+m.rtspUrl
-		# get the subtitles
-		m.subs = self.getSubs(m.mediaDetails['suburl'])
-		print "SUBS"
-		# parse subtitle XML
-		# HACK! HACK! HACK!
-		# if manual:
-		# 	m.subs = open('hustle-spanish.xml', 'r').read()
-		m.captions = self.parseCaptions(m.subs)
+
+		#-----------------------------------------------------------------------
+		# 4. extract URL of RTSP stream (if available)
+		#-----------------------------------------------------------------------
+		if 'ramurl' in m.mediaDetails:
+			print "RAM URL: "+ m.mediaDetails['ramurl']
+			m.rtspUrl = self.getRTSPURL(m.mediaDetails['ramurl'])
+			print "RTSP URL: "+m.rtspUrl
+		else:
+			print "no RTSP URL found :-("
+
+		#-----------------------------------------------------------------------
+		# 5. download and parse captions
+		#-----------------------------------------------------------------------
+		m.subtitleXML = self.getSubtitles(m.mediaDetails['suburl'])
+		m.captions = self.parseCaptions(m.subtitleXML)
+
 		return m
 
 
-###########
-# Main body
-###########
+class mediaSource:
+	""" simple data storage class, representing a multi-format media source """
+	id = -1
+	name = "Media item"
+	captions = () 
+	rtspUrl = ""
+
+	def __init__(self,id):
+		self.id = id
+
+class subtitle:
+	""" simple data storage class, representing single subtitle line with timing info """
+	id = -1
+	start = -1.0
+	end = -1.0
+	text = -1
+	style = ""
+	
+	def __init__(self, id, start, end, style, text):
+		self.id = id
+		self.start = start
+		self.end = end
+		self.style = style
+		self.text = text
+		self.translated = ""
+		self.mood = ""
+		self.audiofile = None
+
 if __name__ == "__main__":
-	# Get iplayer URL from command line
+	""" Get iPlayer URL from command line """
 	if (len(sys.argv) != 2):
 		print "Error: Need program ID...\nUsage: subfetch.py <URL>"
 		sys.exit(1)
 	programurl = sys.argv[1]
 
-
 	# output sutitles
 	for line in lines:
 		print line
 		sys.exit(1)
-
 
