@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+
+""" Short example which fetches subtitles from a given BBC iPlayer URL,
+    translates them into expletives, and outputs. """
+
 import sys
 import settings
 from subvertle import *
