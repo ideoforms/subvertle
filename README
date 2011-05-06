@@ -1,1 +1,17 @@
-subvertle codebase
+SUBVERTLE
+-----------------------------------------------------------------------
+
+Subvertle is a set of tools to extract, manipulate and synthesize BBC iPlayer
+subtitles, created for Culture Hack Day London 2011.
+
+Its main constituents are:
+ - python/subvertle/iplayerlib.py   - a Python library to access iPlayer metadata
+ - python/subvertle/translate.py    - a translation framework, to iteratively transform
+                                      text into different dialects
+ - python/subvertle/singSomeText.py - an interface to the Canoris web service, to
+ - python/web/subvertle-web.py      - a Flask-based web framework to access, translate
+                                      and serve iPlayer subtitles
+ - python/web/subvertle-web.py      - a Flask-based web framework to access, translate
+                                      and serve iPlayer subtitles
+
+ - greasemonkey/iplayer_subtitles.user.js

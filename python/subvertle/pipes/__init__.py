@@ -1,5 +1,5 @@
 __version__ = "0"
 
-from dialectp import *
+from pipe import *
 from expletive import *
 from language import *

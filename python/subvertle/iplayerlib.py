@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env python
 
 import string
 import sys
@@ -12,6 +12,15 @@ class IPlayerError(Exception):
     pass
 
 class iplayerlib:
+	""" iplayerlib: A library to access BBC iPlayer metadata, primarily
+	    subtitle content.
+
+	    Due to the DRM-protected [blech] nature of the video streams, it's sadly
+	    difficult to do anything useful with these. This is left as an exercise
+	    for the reader. However, it's straightforward to obtain and manipulate
+	    the subtitle feeds accompanying many programmes. See the pydocs for
+	    iplayerlib.fetch for details."""
+
 	error = IPlayerError
 	debug = False
 
@@ -28,6 +37,11 @@ class iplayerlib:
 			raise ValueError, "Couldn't extract program ID from URL: %s" % programurl
 			return None
 		return m.group(1)
+
+	@classmethod
+	def getWebData(self, url):
+		response = urllib2.urlopen(url)
+		return response.read()
 
 	@classmethod
 	def getVPID(self, id):
@@ -50,12 +64,13 @@ class iplayerlib:
 			print "Media selector: %s" % url
 		response = urllib2.urlopen(url)
 		rv = {}
-		dom = parse(response)
+		dom = parseString(response.read())
 		root = dom.childNodes[0];
+
 		for node in root.childNodes:
 			if node.nodeType == node.ELEMENT_NODE:
 				# kind = { video, captions }
-				kind = node.getAttribute("kind");
+				kind = node.getAttribute("kind")
 				if kind == "captions":
 					connection = node.childNodes[0]
 					if self.debug:
@@ -121,7 +136,7 @@ class iplayerlib:
 	@classmethod
 	def getRTSPURL(self, ramurl):
 		""" given the URL of a RAM file, returns the first stream (ie, first line of file) """
-		response = urllib2.urlopen(ramurl)
+		response = urllib2.urlopen(url)
 		return response.read()
 
 	@classmethod
@@ -133,10 +148,13 @@ class iplayerlib:
 	@classmethod
 	def fetch(self, url, debug = None):
 		""" Fetch details of an iPlayer stream based on its full URL:
+		    Returns a mediaSource object, or raises a iplayerlib.error exception.
 
 		       m = iplayerlib.fetch("http://www.bbc.co.uk/iplayer/episode/b00rrd81/Human_Planet_Oceans_Into_the_Blue/")
-
-		    Returns a mediaSource object, or raises a iplayerlib.error exception. """
+		       captions = m.captions
+		       for caption in captions:
+		           print caption.text
+		"""
 
 		if debug is not None:
 			self.debug = debug
@@ -169,8 +187,6 @@ class iplayerlib:
 				print "RAM URL: "+ m.mediaDetails['ramurl']
 			try:
 				m.rtspUrl = self.getRTSPURL(m.mediaDetails['ramurl'])
-				if self.debug:
-					print "RTSP URL: "+m.rtspUrl
 			except Exception:
 				if self.debug:
 					print "Couldn't find RTSP URL."
@@ -180,14 +196,15 @@ class iplayerlib:
 		#-----------------------------------------------------------------------
 		# 5. download and parse captions
 		#-----------------------------------------------------------------------
-		m.subtitleXML = self.getSubtitles(m.mediaDetails['suburl'])
+		m.subtitleXML = self.getWebData(m.mediaDetails['suburl'])
 		m.captions = self.parseCaptions(m.subtitleXML)
 
 		return m
 
 
 class mediaSource:
-	""" Simple data storage class, representing a multi-format media source """
+	""" Simple data storage class, representing a multi-format media source.
+	    To access the captions of a media source, use m.captions. """
 	id           = -1
 	vpid         = None
 	name         = "Media item"
@@ -219,7 +236,7 @@ class subtitle:
 		self.audiofile = None
 
 if __name__ == "__main__":
-	""" Get iPlayer URL from command line """
+	""" Get iPlayer subtitles based on specified URL. """
 	if (len(sys.argv) != 2):
 		print "Usage: python %s <iplayer_programme_url>" % sys.argv[0]
 		sys.exit(1)
@@ -227,7 +244,7 @@ if __name__ == "__main__":
 	url = sys.argv[1]
 
 	try:
-		source = iplayerlib.fetch(url, debug = True)
+		source = iplayerlib.fetch(url, debug = False)
 
 		captions = source.captions
 		print "Found %d subtitles" % len(captions)

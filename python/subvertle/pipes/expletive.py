@@ -1,8 +1,8 @@
 import random
 import os
-from dialectp import *
+from pipe import *
 
-class expletive (dialectp):
+class expletive (pipe):
 	swears=[]
 	alpha = 1
 	blacklist={}
@@ -10,7 +10,8 @@ class expletive (dialectp):
 	blacklist["don't"]=1
 	blacklist["t"]=1
 
-	def __init__(self):
+	def __init__(self, parameters = None, child = None):
+		pipe.__init__(self,parameters,child)
 		self.tokenizer = nltk.tokenize.RegexpTokenizer(r'\w+|[^\w\s]+')
 		self.tagger = nltk.UnigramTagger(nltk.corpus.brown.tagged_sents())
 		self.makeSwear()
@@ -32,7 +33,7 @@ class expletive (dialectp):
 		#index = random.paretovariate(self.alpha)*(len(self.swears)-1)
 		return random.choice(self.swears)
 
-	def process(self, text):
+	def transform(self, text):
 		tokenized = self.tokenizer.tokenize(text)
 		tagged = self.tagger.tag(tokenized)
 
@@ -45,7 +46,7 @@ class expletive (dialectp):
 			# # # print "%s: %s" % (type, word)
 			if type and type[0] == 'N' and random.random() < 0.4:
 				swear = self.getSwear()
-				text = re.sub(word, r" \b%s\b%s" % (swear, word), text)
+				text = re.sub(r"\bword\b", "%s %s" % (swear, word), text)
 				done[word] = 1
 
 		return text

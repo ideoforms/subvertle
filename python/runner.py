@@ -29,10 +29,10 @@ def main(args):
 		#  - source.captions: list of caption events
 		#  - source.rtspUrl:  string URL of RTSP stream
 		print " - fetching feed information"
-		source = fetch().fetch(settings.url)
+		source = iplayerlib.fetch(settings.url)
 		translator = translate(settings.dialect,settings.dialectOptions)
-		mood = moodmeter()
-		stream = streamer()
+		# mood = moodmeter()
+		# stream = streamer()
 
 		print " - processing captions (%d)" % len(source.captions)
 		for caption in source.captions:
@@ -53,11 +53,11 @@ def main(args):
 		if not os.path.exists(settings.cachedir):
 			os.mkdir(settings.cachedir)
 
-		generator = thread(target = generate_thread, args = (settings, source.captions, queue))
-		generator.start()
+		# generator = thread(target = generate_thread, args = (settings, source.captions, queue))
+		# generator.start()
 
-		print " - buffering (%ds)" % settings.buffertime
-		time.sleep(settings.buffertime)
+		# print " - buffering (%ds)" % settings.buffertime
+		# time.sleep(settings.buffertime)
 
 		sayqueue = Queue()
 		sayer = thread(target = sayer_thread, args = (sayqueue,))
@@ -66,8 +66,8 @@ def main(args):
 		# streamer.stream(source.rtspUrl)
 		# for caption in source.captions:
 		# 	queue.put(caption)
-		vocals = thread(target = vocal_thread, args = (queue,sayqueue))
-		vocals.start()
+		# vocals = thread(target = vocal_thread, args = (queue,sayqueue))
+		# vocals.start()
 
 	# except Exception, e:
 	#	 print "runner.py failed: %s" % e
@@ -135,7 +135,7 @@ def vocal_thread(queue, sayqueue):
 
 
 def usage():
-	print "usage: runner.py [-d dialect] [url]"
+	print "usage: runner.py [-d dialect] [iplayer_program_url]"
 
 if __name__ == "__main__":
 	main(sys.argv[1:])

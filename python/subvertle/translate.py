@@ -1,10 +1,10 @@
-from dialect import *
+from pipes import *
 
 class translate():
-	def __init__(self, dialectName,options):
-		if (dialectName=="expletive"):
+	def __init__(self, dialectName, options = None):
+		if (dialectName == "expletive"):
 			self.dialect = expletive()
-		elif (dialectName=="language"):
+		elif (dialectName == "language"):
 			self.dialect = language(options)
 		else:
 			self.dialect = expletive()

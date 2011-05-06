@@ -58,7 +58,7 @@ def get():
 	dialect = request.args.get('dialect')
 	print "url: %s, dialect: %s" % (url, dialect)
 	manual = (dialect == "spanish")
-	source = fetch().fetch(url, manual)
+	source = iplayerlib.fetch(url, manual)
 
 	global captions
 	captions = []
@@ -89,9 +89,9 @@ def start():
 	for caption in captions:
 		queue.put(caption)
 
-	vocals = thread(target = vocal_thread, args = (queue,sayqueue))
-	vocals.start()
-	return "hello"
+	# vocals = thread(target = vocal_thread, args = (queue,sayqueue))
+	# vocals.start()
+	# return "hello"
 
 if __name__ == '__main__':
 	app.run(host="0.0.0.0", debug = False)

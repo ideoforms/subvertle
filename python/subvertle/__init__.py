@@ -1,10 +1,10 @@
 __version__ = "0"
 
-from fetch import *
+from iplayerlib import *
 from translate import *
 from moodmeter import *
-from dialect import *
+from pipes import *
 from vocalsynth import *
 from musicsynth import *
 
-import dialect
+# import pipe

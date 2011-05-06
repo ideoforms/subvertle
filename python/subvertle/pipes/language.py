@@ -1,4 +1,8 @@
+from pipe import *
 from xgoogle.translate import Translator
+
+
+
 """                                                           ||
 ||Afrikaans    =[af]  Haitian C  =[ht]  Serbian      =[sr]    ||
 ||Albaniaan    =[sq]  Hebrew     =[iw]  Slovak       =[sk]    ||
@@ -20,19 +24,23 @@ from xgoogle.translate import Translator
 ||German       =[de]  Romanian   =[ro]                        ||
 ||Greek        =[el]  Russian    =[ru] 
 """
-class language():
-	def __init__(self, langs):
-		self.dialect = "language"
-		self.translate = Translator()
-		self.langs = langs
+class language(pipe):
+	def __init__(self, parameters={}, child=None):
+		pipe.__init__(self,parameters,child)
+		self.pipe = "language"
+		self.languages = parameters['languages'] # array of languages
+		self.child = child
+		self.translator = Translator()
 
-	def transform(self,string,toLang):
-		return self.translate.translate(string, lang_to=toLang)
+	def translate(self,string,toLang):
+		return self.translator.translate(string, lang_to=toLang)
 
-	def process(self, string):
+	def transform(self, string):
 		transformed = string
-		for i in (range(0,len(self.langs))):
+		for i in (range(0,len(self.languages))):
 			#print "from "+self.langs[i]+" to "+self.langs[i+1]
-			transformed = self.transform(transformed,self.langs[i])
+			transformed = self.translate(transformed,self.languages[i])
 		return transformed
+
+
 
