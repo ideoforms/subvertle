@@ -3,7 +3,7 @@ from swap import *
 from expletive import *
 from piglatin import *
 from language import *
-from opera import *
+#from opera import *
 
 """I am a plumber. I lay pipes.
 """
