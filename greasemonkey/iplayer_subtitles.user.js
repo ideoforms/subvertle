@@ -8,6 +8,16 @@
 // ==/UserScript==
 
 
+// Hostname and port to the subvertle server.
+// This server must be running the subvertle-web.py web service.
+//-----------------------------------------------------------------
+var webHost = "http://localhost:5000";
+
+// List of available language IDs
+//-----------------------------------------------------------------
+var languages = [ "Spanish", "French", "German", "Esperanto", "Expletive" ];
+
+
 var t0 = 0.0;
 var captions = [];
 var iplayer = 0;
@@ -15,10 +25,12 @@ var emp = 0;
 var timer = 0;
 var startTime = 0.0;
 var nextCaptionIndex = 0;
-var webHost = "http://localhost:5000";
+
 
 function addStyle(css)
 {
+	// Append some CSS styling to the current document.
+	//------------------------------------------------------------
     var head, style;
     head = document.getElementsByTagName('head')[0];
     if (!head) { return; }
@@ -30,7 +42,8 @@ function addStyle(css)
 
 function addMarkup()
 {
-    languages = [ "Spanish", "French", "German", "Esperanto", "Expletive" ];
+	// Append some CSS styling to the current document.
+	//------------------------------------------------------------
     div = document.createElement('div');
     
     languageopts = "";
@@ -71,6 +84,10 @@ function setCaptionIndex(time)
 
 function getCaptions()
 {
+	//---------------------------------------------------------------------
+	// Begin the server-side caption generation, and display a spinny
+	// wheel while we're waiting for processing to finish.
+	//---------------------------------------------------------------------
 	var dialect = $("#subtitle_lang :selected").val().toLowerCase();
 	
 	$("#subtitles_spinner").addClass("active");
@@ -96,8 +113,10 @@ function hideCaptions()
 
 function startCaptions()
 {
+	//---------------------------------------------------------------------
+	// Start our playback timer, and kick off server-side generation.
+	//---------------------------------------------------------------------
 	startTime = emp.getCurrentTimecode();
-	// document.title = "seek: " + startTime;
 	setCaptionIndex(startTime);
 	$.getJSON(webHost + '/start', { });
 	
@@ -107,19 +126,27 @@ function startCaptions()
 
 function stopCaptions()
 {
+	//---------------------------------------------------------------------
+	// Stop.
+	//---------------------------------------------------------------------
 	hideCaptions();
 	clearInterval(timer);
 }
 
 function addCallbacks()
-{    
+{   
+	//---------------------------------------------------------------------
+	// jQuery button bindings.
+	//---------------------------------------------------------------------
 	$('#subtitles_enable').bind('click', getCaptions);
 	$('#subtitles_start').bind('click', startCaptions);
 }
 
 function addPlayerCallbacks()
 {
-	// document.title = "adding callbacks";
+	//---------------------------------------------------------------------
+	// Register events with the iPlayer EMP device.
+	//---------------------------------------------------------------------
 	
 	setTimeout(function () {
 		emp._emp.onMediaPlaying = function () { startCaptions(); };
@@ -133,6 +160,10 @@ $(document).ready(function()
 {
 	var t = setInterval(function ()
 	{
+		//---------------------------------------------------------------------
+		// Extracts the ID of the iPlayer EMP object, to detect and trigger
+		// playback events.
+		//---------------------------------------------------------------------
 		emp = eval("window.content.wrappedJSObject.iplayer.models.Emp.getInstance()");
 		
 		if (emp != undefined)
@@ -153,7 +184,6 @@ function tick()
 	// For compatibility with random seeking through the video, will
 	// ultimately need to be replaced with an alternative method that
 	// can retrieve the appropriate caption for an arbitrary timepoint.
-	// Also desperately meeds 
 	//---------------------------------------------------------------------
 	var dt = (new Date).getTime() - t0;
 	dt = startTime + (dt / 1000.0) - 1;
@@ -168,7 +198,6 @@ function tick()
 		nextCaptionIndex += 1;
 		if (nextCaptionIndex >= captions.length)
 		{
-			alert("reached last caption");
 			stopCaptions();
 		}
 	}
