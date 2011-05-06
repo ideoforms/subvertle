@@ -7,22 +7,34 @@ import re
 import time
 from xml.dom.minidom import parse, parseString
 
-class fetch:
-	def __init__(self):
-		""" some regexps needed for later parsing """
-		self.urlre = re.compile('/episode/(.*?)/')
-		self.vpidre = re.compile('<item kind="programme".*?identifier="(.*?)".*?>')
+class IPlayerError(Exception):
+    """Base class for iPlayer exceptions. """
+    pass
 
+class iplayerlib:
+	error = IPlayerError
+	debug = False
+
+	""" some regexps needed for later parsing """
+	urlre = re.compile('/episode/(.*?)/')
+	vpidre = re.compile('<item kind="programme".*?identifier="(.*?)".*?>')
+
+	@classmethod
 	def getProgramID(self, programurl):
-		print "Program: " + programurl
+		if self.debug:
+			print "Program: %s" % programurl
 		m = self.urlre.search(programurl);
 		if m == None:
 			raise ValueError, "Couldn't extract program ID from URL: %s" % programurl
 			return None
 		return m.group(1)
 
-	def getVPID(self,id):
+	@classmethod
+	def getVPID(self, id):
 		url = "http://www.bbc.co.uk/iplayer/playlist/%s " % id
+		if self.debug:
+			print "Playlist URL: %s" % url
+
 		response = urllib2.urlopen(url)
 		m = self.vpidre.search(response.read())
 		if (m):
@@ -30,9 +42,12 @@ class fetch:
 		else:
 			raise ValueError, "Couldn't extract PIP value from URL: %s" % url
 
-	def parseMediaSelector(self,id):
+	@classmethod
+	def parseMediaSelector(self, id):
 		""" pull out available media descriptions """
 		url = "http://www.bbc.co.uk/mediaselector/4/mtis/stream/%s" % id
+		if self.debug:
+			print "Media selector: %s" % url
 		response = urllib2.urlopen(url)
 		rv = {}
 		dom = parse(response)
@@ -43,16 +58,19 @@ class fetch:
 				kind = node.getAttribute("kind");
 				if kind == "captions":
 					connection = node.childNodes[0]
-					print "subtitles: %s" % connection.getAttribute("href")
+					if self.debug:
+						print " - Subtitles URL: %s" % connection.getAttribute("href")
 					rv['suburl']=connection.getAttribute("href")
 				elif kind == "video":
 					service = node.getAttribute("service")
 					if service == "iplayer_streaming_n95_wifi":
 						connection = node.childNodes[0]
-						print "video: %s" % connection.getAttribute("href")
+						if self.debug:
+							print " - Video URL: %s" % connection.getAttribute("href")
 						rv['ramurl'] = connection.getAttribute("href")
 		return rv
 
+	@classmethod
 	def parseCaptions(self, xml):
 		""" parse caption XML (TT) into a list of subtitle objects """
 		rv = []
@@ -87,6 +105,7 @@ class fetch:
 			rv.append(sub)
 		return rv
 
+	@classmethod
 	def toSeconds(self, timestr):
 		""" turn a Timed Text time string into a floating point value in seconds """
 		m = re.search(r'^(\d+):(\d+):(\d+)\.(\d+)', timestr)
@@ -99,31 +118,43 @@ class fetch:
 		else:
 			raise ValueError, "Could not parse TT time value: %s" % timestr
 
+	@classmethod
 	def getRTSPURL(self, ramurl):
 		""" given the URL of a RAM file, returns the first stream (ie, first line of file) """
 		response = urllib2.urlopen(ramurl)
 		return response.read()
 
-	def getSubtitles(self,url):
+	@classmethod
+	def getSubtitles(self, url):
 		""" fetch subtitle XML file """
 		response = urllib2.urlopen(url)
 		return response.read()
 
-	def fetch(self,url, manual = False):
-		""" begin the long boring road of subtitle extraction """
+	@classmethod
+	def fetch(self, url, debug = None):
+		""" Fetch details of an iPlayer stream based on its full URL:
+
+		       m = iplayerlib.fetch("http://www.bbc.co.uk/iplayer/episode/b00rrd81/Human_Planet_Oceans_Into_the_Blue/")
+
+		    Returns a mediaSource object, or raises a iplayerlib.error exception. """
+
+		if debug is not None:
+			self.debug = debug
 
 		#-----------------------------------------------------------------------
 		# 1. extract programme ID from its URL
 		#-----------------------------------------------------------------------
 		id = self.getProgramID(url)
-		print "Program ID: " + id
+		if self.debug:
+			print "Program ID: " + id
 
 		#-----------------------------------------------------------------------
 		# 2. download playlist XML, and extract programme version ID 
 		#-----------------------------------------------------------------------
 		m = mediaSource(id)
 		m.vpid = self.getVPID(m.id)
-		print "VPID: " + m.vpid
+		if self.debug:
+			print "VPID: " + m.vpid
 
 		#-----------------------------------------------------------------------
 		# 3. download mediaselector XML for stream source details
@@ -134,9 +165,15 @@ class fetch:
 		# 4. extract URL of RTSP stream (if available)
 		#-----------------------------------------------------------------------
 		if 'ramurl' in m.mediaDetails:
-			print "RAM URL: "+ m.mediaDetails['ramurl']
-			m.rtspUrl = self.getRTSPURL(m.mediaDetails['ramurl'])
-			print "RTSP URL: "+m.rtspUrl
+			if self.debug:
+				print "RAM URL: "+ m.mediaDetails['ramurl']
+			try:
+				m.rtspUrl = self.getRTSPURL(m.mediaDetails['ramurl'])
+				if self.debug:
+					print "RTSP URL: "+m.rtspUrl
+			except Exception:
+				if self.debug:
+					print "Couldn't find RTSP URL."
 		else:
 			print "no RTSP URL found :-("
 
@@ -150,22 +187,26 @@ class fetch:
 
 
 class mediaSource:
-	""" simple data storage class, representing a multi-format media source """
-	id = -1
-	name = "Media item"
-	captions = () 
-	rtspUrl = ""
+	""" Simple data storage class, representing a multi-format media source """
+	id           = -1
+	vpid         = None
+	name         = "Media item"
+	mediaDetails = None
+	subtitleXML  = None
+	rtspUrl      = None
 
-	def __init__(self,id):
+	captions = []
+
+	def __init__(self, id):
 		self.id = id
 
 class subtitle:
-	""" simple data storage class, representing single subtitle line with timing info """
-	id = -1
-	start = -1.0
-	end = -1.0
-	text = -1
-	style = ""
+	""" Simple data storage class, representing single subtitle line with timing info """
+	id     = -1
+	start  = 0.0
+	end    = 0.0
+	text   = ""
+	style  = ""
 	
 	def __init__(self, id, start, end, style, text):
 		self.id = id
@@ -180,12 +221,20 @@ class subtitle:
 if __name__ == "__main__":
 	""" Get iPlayer URL from command line """
 	if (len(sys.argv) != 2):
-		print "Error: Need program ID...\nUsage: subfetch.py <URL>"
+		print "Usage: python %s <iplayer_programme_url>" % sys.argv[0]
 		sys.exit(1)
-	programurl = sys.argv[1]
 
-	# output sutitles
-	for line in lines:
-		print line
-		sys.exit(1)
+	url = sys.argv[1]
+
+	try:
+		source = iplayerlib.fetch(url, debug = True)
+
+		captions = source.captions
+		print "Found %d subtitles" % len(captions)
+		for line in captions:
+			print "(%s) %s" % (line.start, line.text)
+
+	except Exception, e:
+		print "fetch failed: %s" % e
+
 
