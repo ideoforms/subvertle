@@ -22,7 +22,6 @@ class expletive (pipe):
 		return False
 
 	def makeSwear(self):
-		# fd = open("subvertle/dialect/swearwords.dat")
 		datfile = os.path.join(os.path.dirname(__file__), "swearwords.dat")
 		fd = open(datfile)
 		for line in fd.readlines():
