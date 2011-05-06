@@ -15,3 +15,25 @@ Its main constituents are:
                                       and serve iPlayer subtitles
 
  - greasemonkey/iplayer_subtitles.user.js
+                                    - a Greasemonkey (Firefox) script which overlays
+                                      subtitles onto iPlayer by interfacing with the
+                                      subvertle-web service.
+
+REQUIREMENTS
+-----------------------------------------------------------------------
+
+For the iPlayer library (iplayerlib.py), no libraries are required.
+Python 2.5+ is supported.
+
+A number of dependencies are present for some of the additional functionality
+ - nltk (for translation)
+ - swmixer, canoris (for singing)
+ - Flask (for web services)
+
+USAGE
+-----------------------------------------------------------------------
+
+For an example of the iPlayer interface and translation code in action:
+
+	cd python
+	python example.py
