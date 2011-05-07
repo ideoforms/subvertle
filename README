@@ -25,7 +25,7 @@ REQUIREMENTS
 For the iPlayer library (iplayerlib.py), no libraries are required.
 Python 2.5+ is supported.
 
-A number of dependencies are present for some of the additional functionality
+A number of python module dependencies are present for some of the additional functionality
  - nltk (for translation)
  - swmixer, canoris (for singing)
  - Flask (for web services)
