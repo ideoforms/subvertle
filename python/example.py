@@ -11,13 +11,13 @@ import sys
 import settings
 from subvertle import *
 
-if len(sys.argv) < 2:
+if len(sys.argv) < 2: # check command line parameters
 	print "usage: %s <iplayer_programme_url>" % sys.argv[0]
 	sys.exit()
 
-source = iplayerlib.fetch(sys.argv[1])
-dialect = translate("expletive")
-translator = translate(settings.dialect)
+source = iplayerlib.fetch(sys.argv[1]) # collect iplayer captions using URL
+
+translator = plumber(["expletive"]) # create translation pipe
 
 for caption in source.captions:
 	print caption.text

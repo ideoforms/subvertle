@@ -28,6 +28,7 @@ class plumber:
 				self.pipeline = opera({}, self.pipeline)
 			#elif (pipe=="language"):
 				# need something pretty clever here for efficiency
+				# there should be caching and the like
 				#print "Error: Not done yet"
 				#self.pipeline = language(, self.pipeline)
 			else:

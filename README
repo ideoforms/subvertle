@@ -29,6 +29,7 @@ A number of python module dependencies are present for some of the additional fu
  - nltk (for translation)
  - swmixer, canoris (for singing)
  - Flask (for web services)
+ - xgoogle.translate (for language translation):  http://www.catonmat.net/blog/python-library-for-google-translate/)
 
 USAGE
 -----------------------------------------------------------------------
@@ -37,3 +38,5 @@ For an example of the iPlayer interface and translation code in action:
 
 	cd python
 	python example.py
+
+
