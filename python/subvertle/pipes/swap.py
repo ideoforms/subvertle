@@ -2,10 +2,11 @@
 import sys
 import os
 from string import *
-
-
 from pipe import *
-"""Simply perform a lexigraphic swap from one word to a different (set of) word(s)
+
+"""	Simply perform a lexigraphic swap from one word to a different (set of) word(s)
+	THe definitions of which X to swap for Y is given in a .dat file. Just inform
+	The module of which swap definition file to use is in the contructor parameter list.
 
 """
 class swap(pipe):
@@ -18,9 +19,9 @@ class swap(pipe):
 			sys.exit(1)
 		self.makeLookup(parameters['map'])
 
-	# create the lookup table
-	def makeLookup(self,map):
-		filename = map+".dat"
+	# create the lookup table using "mapname.dat"
+	def makeLookup(self,mapname):
+		filename = mapname+".dat"
 		if not os.path.isfile(filename):
 			print "Error: swap() can't find the mapping file: "+filename
 		fd = open(filename) 
@@ -41,7 +42,6 @@ class swap(pipe):
 				newword=word
 			#print "doing "+word+" to "+newword
 			slang.append(newword)
-
 		rv = " ".join(slang)
 		return rv
 
