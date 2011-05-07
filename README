@@ -25,11 +25,12 @@ REQUIREMENTS
 For the iPlayer library (iplayerlib.py), no libraries are required.
 Python 2.5+ is supported.
 
-A number of python module dependencies are present for some of the additional functionality
+A number of python module dependencies are present for additional functionality:
  - nltk (for translation)
  - swmixer, canoris (for singing)
  - Flask (for web services)
- - xgoogle.translate (for language translation):  http://www.catonmat.net/blog/python-library-for-google-translate/)
+ - xgoogle.translate (for language translation):  
+	http://www.catonmat.net/blog/python-library-for-google-translate/)
 
 USAGE
 -----------------------------------------------------------------------
@@ -37,6 +38,34 @@ USAGE
 For an example of the iPlayer interface and translation code in action:
 
 	cd python
-	python example.py
+	python example.py <iplayer_programme_url>
+
+
+
+Translation
+-----------------------------------------------------------------------
+
+The subtitles can be arbitrarily transformed through the connection of translation
+'pipes'. The 'plumber' object takes a list of pipe names in its constructor, and will
+then sequentially run any text it is given to process() through these  'pipes'. All 
+pipe definitions are in subvertle/pipes, the process is straight-forward and creation of
+more should be easy. Currently there exists:
+ - expletive: adds swear words at appropriate points (using nltk)
+ - language: use Google Translate to convert between languages
+ - swap: general module for performing basic substitution
+ - lolspeak: exactly what it says on the tin, annoying but easy to implement
+
+The plumber object can be created thus:
+
+translator = plumber(["expletive"]) # just add expletives
+
+translator = plumber(["lolspeak","expletive"]) # make lolspeak, then add expletives
+
+# add expletives, translate to Spanish then French and back to English, finally make lolspeak
+# note that the languages are their own list
+translator = plumber(["expletive",["es","fr","en"],"lolspeak"]) 
+
+Text can then be processed simply using:
+translationString = translator.process(originalString)
 
 
